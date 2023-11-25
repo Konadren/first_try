@@ -60,7 +60,7 @@ def query_from_all_db(commits, tasks, messages, crunches):
         # --- Эти самые "веса" будем считать способом определять, какие из событий (коммиты, кранчи и т.д.)
         # --- имеют больше важности / наиболее критичны
         # --- В данном случае нас сильно пугают кранчи, например
-        burn_chance = (commit_sum*0.3 + task_sum*0.2 + message_sum * 0.2 + crunch_sum*0.35)*100
+        burn_chance = (commit_sum*0.3 + task_sum*0.2 + message_sum * 0.15 + crunch_sum*0.35)*100
         complete_burn_chance = round(burn_chance, 1)
         cursor.execute("UPDATE BurnedPeople SET BurnChance = ? WHERE PersonId = ?", (complete_burn_chance, person_id))
         print(f"{complete_burn_chance}%")
@@ -77,6 +77,12 @@ def count_burnout_chance(*, suppose_commits, suppose_tasks, suppose_messages, su
     tasks = dict(sorted(suppose_tasks.items()))
     messages = dict(sorted(suppose_messages.items()))
     crunches = dict(sorted(suppose_crunches.items()))
+
+    print(commits)
+    print(tasks)
+    print(messages)
+    print(crunches)
+
 
     # --- А вот и используем функцию с кучей SQL-запросов, которая висит выше
     query_from_all_db(commits, tasks, messages, crunches)
