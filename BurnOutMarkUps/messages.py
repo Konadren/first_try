@@ -1,6 +1,5 @@
-import matplotlib.pyplot as plt
+
 import sqlite3
-from datetime import datetime
 from UsersQuery import database_query as dbq
 
 
@@ -19,8 +18,7 @@ def count_messages():
     # Перебор уникальных пользователей
     for user_data in user_info:
         user_id, name, last_name = user_data
-        cursor.execute(dbq.messages_query,
-            (user_id,))
+        cursor.execute(dbq.messages_query, (user_id,))
         rows = cursor.fetchall()
 
         messages_per_day = [row[1] for row in rows]
@@ -47,8 +45,7 @@ def count_messages():
 
         # --- Самая важная часть функции
         burnout_results[user_id] = below_threshold_count
-
-    # Закрытие соединения с базой данных
+        
     conn.close()
-
+    # Закрытие соединения с базой данных
     return burnout_results

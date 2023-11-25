@@ -1,28 +1,29 @@
 import sqlite3
 from datetime import datetime
 from UsersQuery import database_query as dbq
-conn = sqlite3.connect('D:/Python projects/ExperimentalProject/hahaton.db')
-cursor = conn.cursor()
 
-# --- dbq.commit_query и подобные хранятся в папке UsersQuery
-# --- но мы не уверены, насколько удобно и понятно будет бегать глазами в тот и в этот файл
-# --- поэтому всё, что лежит в UsersQuery, мы переменными заменили
-# --- но в algorithm.py запросы прописали по дефолту
-cursor.execute(dbq.commit_query)
-rows = cursor.fetchall()
-
-# --- вспомогательный словарь для плохих коммитов юзера в неделю
-bad_commit_counts_by_person_and_week = {}
-# --- Отслеживаем опасные (по нашему мнению) коммиты
-# --- в надежде, что человек не будет писать fIx sTyLe и т.п.
-burnout_commits = ('FIX', 'STYLE', 'bug fix', 'style', 'fix bug', 'BUG FIX', 'FIX BUG')
-
-# --- А вот здесь уже основной словарь, который
-# --- мы по итогу и возвращаем как результат функции
-potential_burnout_people_with_commits = {}
 
 
 def count_commits_for_bad_situations():
+    conn = sqlite3.connect('D:/Python projects/ExperimentalProject/hahaton.db')
+    cursor = conn.cursor()
+
+    # --- dbq.commit_query и подобные хранятся в папке UsersQuery
+    # --- но мы не уверены, насколько удобно и понятно будет бегать глазами в тот и в этот файл
+    # --- поэтому всё, что лежит в UsersQuery, мы переменными заменили
+    # --- но в algorithm.py запросы прописали по дефолту
+    cursor.execute(dbq.commit_query)
+    rows = cursor.fetchall()
+
+    # --- вспомогательный словарь для плохих коммитов юзера в неделю
+    bad_commit_counts_by_person_and_week = {}
+    # --- Отслеживаем опасные (по нашему мнению) коммиты
+    # --- в надежде, что человек не будет писать fIx sTyLe и т.п.
+    burnout_commits = ('FIX', 'STYLE', 'bug fix', 'style', 'fix bug', 'BUG FIX', 'FIX BUG')
+
+    # --- А вот здесь уже основной словарь, который
+    # --- мы по итогу и возвращаем как результат функции
+    potential_burnout_people_with_commits = {}
     # --- Шерстим rows (строка 12)
     for commit in rows:
         commit_id, person_id, date, message, name, last_name = commit
@@ -56,8 +57,6 @@ def count_commits_for_bad_situations():
             potential_burnout_people_with_commits[person_id] = 1
         else:
             potential_burnout_people_with_commits[person_id] = 0
-
-    conn.close()
 
     return potential_burnout_people_with_commits
 

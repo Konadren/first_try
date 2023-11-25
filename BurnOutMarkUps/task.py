@@ -1,10 +1,10 @@
 import sqlite3
 from datetime import datetime, timedelta
 from UsersQuery import database_query as dbq
-from UsersPreferedDates.dates import start_date
 
 
-def count_tasks():
+
+def count_tasks(start_date):
     # Подключение к базе данных SQLite
     conn = sqlite3.connect('D:/Python projects/ExperimentalProject/hahaton.db')
     cursor = conn.cursor()
@@ -28,9 +28,11 @@ def count_tasks():
         # Создание словаря для хранения суммы тасков по неделям и айдишника работника
         weekly_tasks = {}
 
+
         # --- Ищем таски, сортируем их по неделям
         for row in rows:
             date = datetime.strptime(row[0], '%Y-%m-%d')
+            print(date)
             # Определение, в какую неделю попадает дата
             week_number = (date - start_date).days // 7 + 1
             week_start = start_date + timedelta(weeks=week_number - 1)
@@ -51,5 +53,5 @@ def count_tasks():
             else:
                 over_tasks_for_human[user_id] = 0
 
-    conn.close()
+
     return over_tasks_for_human
