@@ -1,25 +1,35 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from crunches import count_crunches
+from messages import count_messages
+from task import count_tasks
+from commits import bad_commit_counts_by_person_and_week
 
-# Пример данных
-categories = ['01.10.23', '02.10.23', '03.10.23', '04.10.23', '05.10.23']
-values_part1 = [2, 3, 1, 0, 4]
-values_part2 = [10, 12, 11, 9, 8]
+# Получаем уникальные идентификаторы пользователей
+user_ids = set(user_id for user_id, _ in bad_commit_counts_by_person_and_week)
 
-# Создание столбчатой диаграммы с двумя частями разных цветов
-bar1 = plt.bar(np.arange(len(categories)), values_part1, color='red',  label='Плохие коммиты')
-bar2 = plt.bar(categories, values_part2, color='green', label='Всего коммитов', bottom=values_part1)
+# Вычисляем количество subplot'ов в зависимости от числа уникальных PersonId
+num_subplots = len(user_ids)
 
-for idx, value in enumerate(values_part1):
-    plt.text(idx, value + values_part2[idx], str(value + values_part2[idx]), ha='center', va='bottom')
+# Создаем subplot'ы
+fig, axs = plt.subplots(1, num_subplots, figsize=(12, 6))
 
+# Создаем графики для каждого пользователя
+for idx, user_id in enumerate(user_ids):
+    user_data = {key: value for key, value in bad_commit_counts_by_person_and_week.items() if key[0] == user_id}
+    categories, bad_commits = zip(*user_data.items())
 
-# Добавление заголовка и подписей к осям
-plt.title('Коммиты')
-plt.xlabel('Дни')
-plt.ylabel('Кол-во')
-plt.legend()
+    axs[idx].bar(np.arange(len(categories)), bad_commits, label=f'Плохие коммиты (PersonId={user_id})')
 
-# Отображение диаграммы
-plt.show()
+    # Добавление заголовка и подписей к осям
+    axs[idx].set_title(f'Коммиты (PersonId={user_id})')
+    axs[idx].set_xlabel('Недели')
+    axs[idx].set_ylabel('Кол-во')
+    axs[idx].legend()
 
+# Отображение диаграмм
+# plt.tight_layout()
+# plt.show()
+count_tasks()
+count_messages()
+count_crunches()
