@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from UsersQuery import database_query as dbq
 
 
-def count_tasks():
+def count_tasks(start_date, end_date):
     # Подключение к базе данных SQLite
     conn = sqlite3.connect('D:/Python projects/ExperimentalProject/hahaton.db')
     cursor = conn.cursor()

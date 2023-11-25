@@ -4,7 +4,7 @@ from datetime import datetime
 from UsersQuery import database_query as dbq
 
 
-def count_messages():
+def count_messages(start_date, end_date):
     # Подключение к базе данных SQLite
     conn = sqlite3.connect('D:/Python projects/ExperimentalProject/hahaton.db')
     cursor = conn.cursor()

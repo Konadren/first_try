@@ -15,7 +15,7 @@ burnout_commits = ('FIX', 'STYLE', 'bug fix', 'style', 'fix bug', 'BUG FIX', 'FI
 potential_burnout_people_with_commits = {}  # Используем множество для уникальных значений PersonId
 
 
-def count_commits_for_bad_situations():
+def count_commits_for_bad_situations(start_date, end_date):
     for commit in rows:
         commit_id, person_id, date, message, name, last_name = commit
         # print(f"Commit ID: {commit_id}, Person ID: {person_id}, Date: {date}, Message: {message}, Name: {name}, Last "
@@ -49,16 +49,6 @@ def count_commits_for_bad_situations():
         else:
             potential_burnout_people_with_commits[person_id] = 0
 
-    # print(f'Потенциальные погорельцы {potential_burnout_people_with_commits}')
-
-    # Вывод количества плохих коммитов для каждой недели и PersonId
-    # for (person_id, week_number), bad_commit_count in bad_commit_counts_by_person_and_week.items():
-    #     print(
-    #         f"Week: {week_number}, Person ID: {person_id}, Bad Commits: {bad_commit_count}")
-
-    # счетчик ПЛОХИХ коммитов
-    # print("Total Bad Commits:", sum(bad_commit_counts_by_person_and_week.values()))
-    # print(bad_commit_counts_by_person_and_week)
     conn.close()
 
     return potential_burnout_people_with_commits
