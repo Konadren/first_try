@@ -52,16 +52,14 @@ def count_messages():
             else:
                 below_threshold_days = 0
                 burn_out_edge_exceeded = False
-        print(below_threshold_count)
+
         # Сохранение результатов сгорания для пользователя
         burnout_results[user_id] = below_threshold_count
 
     # Закрытие соединения с базой данных
     conn.close()
-    print(burnout_results)
+
     # Вывод результатов сгорания для всех пользователей
     # for (name, last_name), count in burnout_results.items():
     #     print(f'{name} {last_name}: Количество раз сгораний: {count}')
     return burnout_results
-
-count_messages()

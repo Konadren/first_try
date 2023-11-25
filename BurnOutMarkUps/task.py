@@ -58,9 +58,11 @@ def count_tasks():
             if tasks_count > 17:
                 # Если user_id уже есть в словаре, увеличиваем значение на 1
                 # Если user_id отсутствует, добавляем его в словарь со значением 1
-                over_tasks_for_human[user_id] = over_tasks_for_human.get(user_id, 0) + 1
+                over_tasks_for_human[user_id] = 1
                 # print(
                 #     f'У пользователя {user_id} риск выгорания в неделю {week}! Общее количество тасков: {tasks_count}')
+            else:
+                over_tasks_for_human[user_id] = 0
 
         # Добавление результатов сгорания для пользователя в общий словарь
         burnout_results[user_id] = weekly_tasks

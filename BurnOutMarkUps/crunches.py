@@ -1,18 +1,77 @@
+# import sqlite3
+# from datetime import datetime, timedelta
+# from UsersQuery import database_query as dbq
+#
+#
+# def count_crunches():
+#     # Подключение к базе данных SQLite
+#     conn = sqlite3.connect('D:/Python projects/ExperimentalProject/hahaton.db')
+#     cursor = conn.cursor()
+#
+#     # Получение информации о пользователях и их идентификаторах из таблицы work_hours
+#     cursor.execute(dbq.crunches_query_1)
+#     user_info = cursor.fetchall()
+#
+#     # Словарь для хранения информации о превышении часов работы для каждой недели каждого пользователя
+#     exceeded_hours = {}
+#
+#     # Перебор уникальных пользователей
+#     for user_data in user_info:
+#         user_id, name, last_name = user_data
+#
+#         # Получение всех записей о времени работы для пользователя за заданный период
+#         cursor.execute(dbq.crunches_query_2, (user_id,))
+#         rows = cursor.fetchall()
+#
+#         # Обработка записей и накопление часов работы по неделям
+#         for row in rows:
+#             date = datetime.strptime(row[0], '%Y-%m-%d')
+#             # week_start = date - timedelta(days=date.weekday())  # Начало недели (понедельник)
+#
+#             # Получение номера недели в году
+#             week_number = date.isocalendar()[1]
+#
+#             # Получение ключа для недели данного пользователя
+#             week_key = f"{date.year}_{week_number}"
+#
+#             # Инициализация информации о превышении часов для данного пользователя и недели
+#             if week_key not in exceeded_hours:
+#                 exceeded_hours[week_key] = {user_id: 0}
+#             elif user_id not in exceeded_hours[week_key]:
+#                 exceeded_hours[week_key][user_id] = 0
+#
+#             # Накопление часов работы для данного пользователя и недели
+#             exceeded_hours[week_key][user_id] += row[1]
+#
+#     # Проверка на превышение 25 часов и вывод предупреждения, если это первое превышение за неделю
+#     for week_data in exceeded_hours.items():
+#         for user_id, hours_worked in week_data[1].items():
+#             if hours_worked > 55*4.05:
+#                 week_start = datetime.strptime(week_data[0] + '-1', "%Y_%W-%w")
+#                 week_end = week_start + timedelta(days=6)
+#                 # print(
+#                 #     f'У работника PersonId: {user_id}) риск переработки в неделю с {week_start.strftime("%Y-%m-%d")} по {week_end.strftime("%Y-%m-%d")}! Общее время переработки: {hours_worked} часов')
+#
+#     # Закрытие соединения с базой данных
+#     conn.close()
+#     return exceeded_hours
+#
+
 import sqlite3
 from datetime import datetime, timedelta
 from UsersQuery import database_query as dbq
 
-
-def count_crunches():
+# Функция для подсчета работы более 222 часов за месяц
+def count_crunches(start_date, end_date):
     # Подключение к базе данных SQLite
-    conn = sqlite3.connect('D:/Python projects/ExperimentalProject/hahaton.db')
+    conn = sqlite3.connect('hahaton.db')
     cursor = conn.cursor()
 
     # Получение информации о пользователях и их идентификаторах из таблицы work_hours
     cursor.execute(dbq.crunches_query_1)
     user_info = cursor.fetchall()
 
-    # Словарь для хранения информации о превышении часов работы для каждой недели каждого пользователя
+    # Словарь для хранения информации о превышении часов работы для каждого пользователя
     exceeded_hours = {}
 
     # Перебор уникальных пользователей
@@ -23,39 +82,23 @@ def count_crunches():
         cursor.execute(dbq.crunches_query_2, (user_id,))
         rows = cursor.fetchall()
 
-        # Обработка записей и накопление часов работы по неделям
+        # Обработка записей и накопление часов работы за месяц
+        total_hours_worked = 0
         for row in rows:
             date = datetime.strptime(row[0], '%Y-%m-%d')
-            # week_start = date - timedelta(days=date.weekday())  # Начало недели (понедельник)
 
-            # Получение номера недели в году
-            week_number = date.isocalendar()[1]
+            # Проверка, попадает ли дата в заданный интервал
+            if start_date <= date <= end_date:
+                total_hours_worked += row[1]
 
-            # Получение ключа для недели данного пользователя
-            week_key = f"{date.year}_{week_number}"
-
-            # Инициализация информации о превышении часов для данного пользователя и недели
-            if week_key not in exceeded_hours:
-                exceeded_hours[week_key] = {user_id: 0}
-            elif user_id not in exceeded_hours[week_key]:
-                exceeded_hours[week_key][user_id] = 0
-
-            # Накопление часов работы для данного пользователя и недели
-            exceeded_hours[week_key][user_id] += row[1]
-
-    # Проверка на превышение 25 часов и вывод предупреждения, если это первое превышение за неделю
-    for week_data in exceeded_hours.items():
-        for user_id, hours_worked in week_data[1].items():
-            if hours_worked > 25:
-                week_start = datetime.strptime(week_data[0] + '-1', "%Y_%W-%w")
-                week_end = week_start + timedelta(days=6)
-                # print(
-                #     f'У работника PersonId: {user_id}) риск переработки в неделю с {week_start.strftime("%Y-%m-%d")} по {week_end.strftime("%Y-%m-%d")}! Общее время переработки: {hours_worked} часов')
+        # Проверка на превышение 222 часов и запись метки (1 или 0) в словарь
+        if total_hours_worked > 50:
+            exceeded_hours[user_id] = 1
+        else:
+            exceeded_hours[user_id] = 0
 
     # Закрытие соединения с базой данных
     conn.close()
     return exceeded_hours
-
-
 
 

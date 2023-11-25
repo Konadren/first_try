@@ -12,7 +12,7 @@ bad_commit_counts_by_person_and_week = {}
 
 burnout_commits = ('FIX', 'STYLE', 'bug fix', 'style', 'fix bug', 'BUG FIX', 'FIX BUG')
 
-potential_burnout_people_with_commits = set()  # Используем множество для уникальных значений PersonId
+potential_burnout_people_with_commits = {}  # Используем множество для уникальных значений PersonId
 
 
 def count_commits_for_bad_situations():
@@ -44,8 +44,10 @@ def count_commits_for_bad_situations():
 
     # Поиск потенциальных "погорельцев" с более чем 3 плохими коммитами
     for (person_id, _), bad_commit_count in bad_commit_counts_by_person_and_week.items():
-        if bad_commit_count > 3:
-            potential_burnout_people_with_commits.add(person_id)
+        if bad_commit_count > 4:
+            potential_burnout_people_with_commits[person_id] = 1
+        else:
+            potential_burnout_people_with_commits[person_id] = 0
 
     # print(f'Потенциальные погорельцы {potential_burnout_people_with_commits}')
 
