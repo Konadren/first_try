@@ -1,15 +1,15 @@
 import sqlite3
 from datetime import datetime, timedelta
+from UsersQuery import database_query as dbq
 
 
 def count_crunches():
     # Подключение к базе данных SQLite
-    conn = sqlite3.connect('hahaton.db')
+    conn = sqlite3.connect('D:/Python projects/ExperimentalProject/hahaton.db')
     cursor = conn.cursor()
 
     # Получение информации о пользователях и их идентификаторах из таблицы work_hours
-    cursor.execute("SELECT DISTINCT work_hours.PersonId, Persons.Name, Persons.LastName FROM work_hours JOIN Persons "
-                   "ON work_hours.PersonId = Persons.ID")
+    cursor.execute(dbq.crunches_query_1)
     user_info = cursor.fetchall()
 
     # Словарь для хранения информации о превышении часов работы для каждой недели каждого пользователя
@@ -20,16 +20,13 @@ def count_crunches():
         user_id, name, last_name = user_data
 
         # Получение всех записей о времени работы для пользователя за заданный период
-        cursor.execute(
-            "SELECT Date, Hours_worked FROM work_hours WHERE PersonId = ? AND Date BETWEEN '2023-10-01' AND "
-            "'2023-11-30'",
-            (user_id,))
+        cursor.execute(dbq.crunches_query_2, (user_id,))
         rows = cursor.fetchall()
 
         # Обработка записей и накопление часов работы по неделям
         for row in rows:
             date = datetime.strptime(row[0], '%Y-%m-%d')
-            week_start = date - timedelta(days=date.weekday())  # Начало недели (понедельник)
+            # week_start = date - timedelta(days=date.weekday())  # Начало недели (понедельник)
 
             # Получение номера недели в году
             week_number = date.isocalendar()[1]
@@ -52,10 +49,13 @@ def count_crunches():
             if hours_worked > 25:
                 week_start = datetime.strptime(week_data[0] + '-1', "%Y_%W-%w")
                 week_end = week_start + timedelta(days=6)
-                print(
-                    f'У работника {name} {last_name} (PersonId: {user_id}) риск переработки в неделю с {week_start.strftime("%Y-%m-%d")} по {week_end.strftime("%Y-%m-%d")}! Общее время переработки: {hours_worked} часов')
+                # print(
+                #     f'У работника PersonId: {user_id}) риск переработки в неделю с {week_start.strftime("%Y-%m-%d")} по {week_end.strftime("%Y-%m-%d")}! Общее время переработки: {hours_worked} часов')
 
     # Закрытие соединения с базой данных
     conn.close()
+    return exceeded_hours
 
-count_crunches()
+
+
+

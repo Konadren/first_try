@@ -1,10 +1,10 @@
 import sqlite3
 from datetime import datetime
-conn = sqlite3.connect('hahaton.db')
+from UsersQuery import database_query as dbq
+conn = sqlite3.connect('D:/Python projects/ExperimentalProject/hahaton.db')
 cursor = conn.cursor()
 
-cursor.execute(
-    'SELECT Comeets.ID, Comeets.PersonId, Comeets.Date, Comeets.ComeetMessage, Persons.Name, Persons.LastName FROM Comeets JOIN Persons ON Comeets.PersonId = Persons.ID')
+cursor.execute(dbq.commit_query)
 rows = cursor.fetchall()
 
 # Словарь для хранения счетчика ПЛОХИХ коммитов для каждого PersonId и недели
@@ -12,7 +12,7 @@ bad_commit_counts_by_person_and_week = {}
 
 burnout_commits = ('FIX', 'STYLE', 'bug fix', 'style', 'fix bug', 'BUG FIX', 'FIX BUG')
 
-potential_burnout_people = set()  # Используем множество для уникальных значений PersonId
+potential_burnout_people_with_commits = set()  # Используем множество для уникальных значений PersonId
 
 
 def count_commits_for_bad_situations():
@@ -45,18 +45,22 @@ def count_commits_for_bad_situations():
     # Поиск потенциальных "погорельцев" с более чем 3 плохими коммитами
     for (person_id, _), bad_commit_count in bad_commit_counts_by_person_and_week.items():
         if bad_commit_count > 3:
-            potential_burnout_people.add(person_id)
+            potential_burnout_people_with_commits.add(person_id)
 
-    print(f'Потенциальные погорельцы {potential_burnout_people}')
+    # print(f'Потенциальные погорельцы {potential_burnout_people_with_commits}')
 
     # Вывод количества плохих коммитов для каждой недели и PersonId
-    for (person_id, week_number), bad_commit_count in bad_commit_counts_by_person_and_week.items():
-        print(
-            f"Week: {week_number}, Person ID: {person_id}, Bad Commits: {bad_commit_count}")
+    # for (person_id, week_number), bad_commit_count in bad_commit_counts_by_person_and_week.items():
+    #     print(
+    #         f"Week: {week_number}, Person ID: {person_id}, Bad Commits: {bad_commit_count}")
 
     # счетчик ПЛОХИХ коммитов
-    print("Total Bad Commits:", sum(bad_commit_counts_by_person_and_week.values()))
-    print(bad_commit_counts_by_person_and_week)
+    # print("Total Bad Commits:", sum(bad_commit_counts_by_person_and_week.values()))
+    # print(bad_commit_counts_by_person_and_week)
+    conn.close()
 
-# Вызываем функцию подсчета
-count_commits_for_bad_situations()
+    return potential_burnout_people_with_commits
+
+
+
+
